@@ -17,17 +17,10 @@ class RscDisplayCurator
 {
 	// couple achilles init with curator display
 	onLoad = "[_this select 0] call Achilles_fnc_onDisplayCuratorLoad;";
-	
-	/*
-	// change remove map satelite texture
-	class ControlsBackground 
+	class Controls 
 	{
-		class Map: RscMapControl 
-		{
-			maxSatelliteAlpha = 0;
-		};
+		#include "Replacement\RscDisplayAttributesModuleTree.hpp"
 	};
-	*/
 };
 
 /*
@@ -45,8 +38,6 @@ class RscDisplayMain: RscStandardDisplay
 };
 */
 // load external resources
-class RscControlsGroupNoScrollbars;
-class RscControlsGroupNoHScrollbars;
 class RscAttributeOwners : RscControlsGroupNoScrollbars {};
 
 // load external attributes
@@ -72,6 +63,7 @@ class RscAttributeRespawnPosition : RscControlsGroupNoScrollbars
 
 // include modified attributes
 #include "Replacement\RscAttributes.hpp"
+#include "Replacement\RscAttributeInventory.hpp"
 
 // include modified dialogs and displays
 #include "Replacement\RscDisplayAttributesMan.hpp"

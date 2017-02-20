@@ -29,6 +29,7 @@ class CfgFunctions
 			class checkLineOfFire2D;
 			class matrixTranspose;
 			class vectorMap;
+			class dikToLetter;
 		};
 		
 		class functions_f_features
@@ -54,6 +55,8 @@ class CfgFunctions
 			class ungroupObjects;
             class setCuratorVisionModes;
 			class damageBuildings;
+			class vehicleArsenal;
+			class preplaceMode;
 		};
 	};
 	class A3_Functions_F_Curator

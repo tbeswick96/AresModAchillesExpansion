@@ -53,9 +53,11 @@ class CfgVehicles
 	#include "DevTools\cfgVehiclesModulesDevTools.hpp"
 	#include "Effects\cfgVehiclesModuleEffects.hpp"
 	#include "FireSupport\cfgVehiclesModulesFireSupport.hpp"
+	#include "Helpers\cfgVehiclesModulesHelpers.hpp"
 	#include "Environment\cfgVehiclesModulesEnvironment.hpp"
 	#include "MissionFlow\cfgVehiclesModulesMissionFlow.hpp"
 	#include "Objects\cfgVehiclesModulesObjects.hpp"
+	#include "Replacement\cfgVehiclesModulesReplacement.hpp"
 	#include "Spawn\cfgVehiclesModulesSpawn.hpp"
 	
 	// config replacement: remove vanilla effect modules and training category
