@@ -6,28 +6,25 @@
 //  DESCRIPTION: Module for binding variables to objects
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "\achilles\modules_f_ares\module_header.hpp"
+#include "\achilles\modules_f_ares\module_header.inc.sqf"
 
-_object = [_logic, false] call Ares_fnc_GetUnitUnderCursor;
-if (isNull _object) exitWith {["No object selected!"] call Ares_fnc_ShowZeusMessage; playSound "FD_Start_F"};
+private _object = [_logic, false] call Ares_fnc_GetUnitUnderCursor;
+if (isNull _object) exitWith {[localize "STR_AMAE_NO_OBJECT_SELECTED"] call Achilles_fnc_ShowZeusErrorMessage};
 
-_dialogResult = [
-	localize "STR_BIND_VAR",
+private _dialogResult = [
+	localize "STR_AMAE_BIND_VAR",
 	[
-		[localize "STR_VAR",""],
-		[localize "STR_MODE",["Local","Public"]]
+		[localize "STR_AMAE_VAR",""],
+		[localize "STR_AMAE_MODE",["Local","Public"]]
 	]
 ] call Ares_fnc_ShowChooseDialog;
-if (count _dialogResult > 0) then 
+
+if (_dialogResult select 0 == "") exitWith {["No variable entered!"] call Achilles_fnc_ShowZeusErrorMessage};
+
+if (count _dialogResult > 0) then
 {
-	_var = _dialogResult select 0;
-	if (_dialogResult select 1 == 0) then
-	{
-		_object call compile format["%1 = _this;",_var];
-	} else
-	{
-		[_object, compile format["%1 = _this;",_var]] remoteExec ["spawn",0];
-	};
+	private _var = _dialogResult select 0;
+    if (_dialogResult select 1 == 0) then {_object call compile format["%1 = _this;",_var]} else {[_object, compile format["%1 = _this;",_var], 0]  call Achilles_fnc_spawn};
 };
 
-#include "\achilles\modules_f_ares\module_footer.hpp"
+#include "\achilles\modules_f_ares\module_footer.inc.sqf"

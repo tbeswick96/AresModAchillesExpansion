@@ -1,6 +1,6 @@
-#include "\achilles\modules_f_ares\module_header.hpp"
+#include "\achilles\modules_f_ares\module_header.inc.sqf"
 
-_groupUnderCursor = [_logic] call Ares_fnc_GetGroupUnderCursor;
+private _groupUnderCursor = [_logic] call Ares_fnc_GetGroupUnderCursor;
 
 //Broadcast search building function
 if (isNil "Achilles_var_search_building_init_done") then
@@ -9,7 +9,7 @@ if (isNil "Achilles_var_search_building_init_done") then
 	Achilles_var_search_building_init_done = true;
 };
 
-[objnull, "Searching nearby building."] call bis_fnc_showCuratorFeedbackMessage;
+[localize "STR_AMAE_SEARCH_NEAREST_BUILDING"] call Ares_fnc_showZeusMessage;
 
 if (local _groupUnderCursor) then
 {
@@ -19,4 +19,4 @@ if (local _groupUnderCursor) then
 	[_groupUnderCursor, 50, "NEAREST", getPos _logic, true, false, false] remoteExec ["Ares_fnc_SearchBuilding", leader _groupUnderCursor];
 };
 
-#include "\achilles\modules_f_ares\module_footer.hpp"
+#include "\achilles\modules_f_ares\module_footer.inc.sqf"

@@ -2,38 +2,47 @@
 */
 Achilles_var_excludedFactions = [];
 
-_factions = ([configfile >> "CfgFactionClasses"] call BIS_fnc_getCfgSubClasses);
-_faction_names = [];
+private _factions = ([configfile >> "CfgFactionClasses"] call BIS_fnc_getCfgSubClasses);
+_factions =
+[
+	_factions,
+	[],
+	{
+		private _faction = _x;
+		private _factionCfg = (configfile >> "CfgFactionClasses" >> _faction);
+		getText (_factionCfg >> "displayName");
+	}
+] call BIS_fnc_sortBy;
 
 {
-	_faction = _x;
-	_faction_cfg_path = (configfile >> "CfgFactionClasses" >> _faction);
-	if (([_faction_cfg_path, "side", -1] call BIS_fnc_returnConfigEntry) in [0,1,2]) then
+	private _faction = _x;
+	private _factionCfg = (configfile >> "CfgFactionClasses" >> _faction);
+	private _sideId = [_factionCfg, "side", -1] call BIS_fnc_returnConfigEntry;
+	if (_sideId in [0,1,2,3]) then
 	{
-		_faction_name = [_faction_cfg_path, "displayName", ""] call BIS_fnc_returnConfigEntry;
-		if (not (_faction_name in _faction_names)) then
-		{
-			_faction_names pushBack _faction_name;
-			[
-				format ["Achilles_var_%1",_faction],
-				"CHECKBOX",
-				_faction_name,
-				localize "STR_AVAILABLE_FACTIONS",
-				true,
-				false,
-				compile 
-				("
-					params [""_value""]; 
-					if (_value) then 
-					{
-						Achilles_var_excludedFactions = Achilles_var_excludedFactions - [""" + _faction_name + """]
-					} else
-					{
-						Achilles_var_excludedFactions pushBack """ + _faction_name + """;
-					};
-					Achilles_var_reloadDisplay = true;
-				")
-			] call cba_settings_fnc_init;
-		};
+		private _factionName = getText (_factionCfg >> "displayName");
+		private _sideName = [_sideId] call BIS_fnc_sideName;
+		[
+			format ["Achilles_var_%1", _faction],
+			"CHECKBOX",
+			_factionName,
+			[localize "STR_AMAE_AVAILABLE_FACTIONS", _sideName],
+			true,
+			false,
+			compile format
+			["
+				params [""_value""]; 
+				if (_value) then 
+				{
+					Achilles_var_excludedFactions = Achilles_var_excludedFactions - [""%1%2""]
+				} else
+				{
+					Achilles_var_excludedFactions pushBackUnique ""%1%2"";
+				};
+				Achilles_var_reloadDisplay = true;
+				uiNamespace setVariable [""Achilles_var_nestedList_vehicleFactions"", []];
+				uiNamespace setVariable [""Achilles_var_supplyDrop_factions"", []];
+			", _factionName, ([1,0,2,3] select _sideId)]
+		] call cba_settings_fnc_init;
 	};
 } forEach _factions;

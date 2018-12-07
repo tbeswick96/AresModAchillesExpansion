@@ -12,15 +12,6 @@ class CfgPatches
 		
 		units[] =
 		{
-			"Ares_Module_Arsenal_AddFull",
-			"Ares_Module_Arsenal_AddCustom",
-			"Ares_Module_Arsenal_Copy_To_Clipboard",
-			"Ares_Module_Arsenal_Paste_Replace",
-			"Ares_Module_Arsenal_Paste_Combine",
-			"Ares_Module_Arsenal_Create_Nato",
-			"Ares_Module_Arsenal_Create_Csat",
-			"Ares_Module_Arsenal_Create_Aaf",
-			"Ares_Module_Arsenal_Create_Guerilla",
 			"Ares_Module_Behaviour_Patrol",
 			"Ares_Module_Behaviour_Search_Nearby_And_Garrison",
 			"Ares_Module_Behaviour_Search_Nearby_Building",
@@ -33,7 +24,6 @@ class CfgPatches
 			"Ares_Module_Equipment_Flashlight_IR_ON_OFF",
 			"Ares_Module_Equipment_NVD_TACLIGHT_IR",
 			"Ares_Artillery_Fire_Mission_Module",
-			"Ares_Create_Artillery_Target_Module",
 			"Ares_Module_Player_Teleport",
 			"Ares_Module_Player_Create_Teleporter",
 			"Ares_Module_Player_Change_Player_Side",
@@ -57,6 +47,7 @@ class CfgPatches
 			"A3_Functions_F_Curator",
 			"A3_Modules_F",
 			"A3_Modules_F_Curator",
+            "A3_Modules_F_Orange",
 			"achilles_language_f",
 			"achilles_functions_f_ares",
 			"achilles_functions_f_achilles",

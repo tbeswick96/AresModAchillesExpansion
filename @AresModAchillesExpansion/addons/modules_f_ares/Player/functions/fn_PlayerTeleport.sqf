@@ -6,44 +6,45 @@
 //  DESCRIPTION: Teleport Module
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "\achilles\modules_f_ares\module_header.hpp"
+#include "\achilles\modules_f_ares\module_header.inc.sqf"
 
-_tp_pos = position _logic;
+private _tp_pos = position _logic;
 
-_dialogResult = [
-	localize "STR_TELEPORT", 
-	[ 
-		[localize "STR_MODE",[localize "STR_ZEUS", localize "STR_ALL",localize "STR_SELECTION",localize "STR_SIDE", localize "STR_PLAYER", localize "STR_GROUP"]],
-		["", ["..."]],
-		[localize "STR_SIDE","ALLSIDE"],
-		[localize "STR_INCLUDE_VEHICLES",[localize "STR_FALSE",localize "STR_TRUE"]]
+private _dialogResult = [
+	localize "STR_AMAE_TELEPORT",
+	[
+		[localize "STR_AMAE_MODE",[localize "STR_AMAE_ZEUS", localize "STR_AMAE_ALL",localize "STR_AMAE_SELECTION",localize "STR_AMAE_SIDE", localize "STR_AMAE_PLAYERS", localize "STR_AMAE_GROUP"]],
+		["", [""]],
+		[localize "STR_AMAE_SIDE","ALLSIDE"],
+		[localize "STR_ADDITIONAL_OPTION",[localize "STR_AMAE_NONE", localize "STR_AMAE_INCLUDE_VEHICLES", localize "STR_AMAE_HALO"]]
 	],
 	"Achilles_fnc_RscDisplayAttributes_selectPlayers"
 ] call Ares_fnc_ShowChooseDialog;
 
-if (count _dialogResult == 0) exitWith {};
+if (_dialogResult isEqualTo []) exitWith {};
 
-_playersToTeleport = switch (_dialogResult select 0) do
+_dialogResult params ["_mode", "", "_side_index", "_additionalOption"];
+
+private _playersToTeleport = switch (_mode) do
 {
 	case 0:
 	{
 		[player];
 	};
-	case 1: 
+	case 1:
 	{
 		allPlayers select {alive _x};
 	};
-	case 2: 
+	case 2:
 	{
-		_selection = [toLower localize "STR_PLAYERS"] call Achilles_fnc_SelectUnits;
+		private _selection = [toLower localize "STR_AMAE_PLAYERS"] call Achilles_fnc_SelectUnits;
 		if (isNil "_selection") exitWith {nil};
 		_selection select {isPlayer _x};
 	};
-	case 3: 
+	case 3:
 	{
-		_side_index = _dialogResult select 2;
 		if (_side_index == 0) exitWith {[player]};
-		_side = [east,west,independent,civilian] select (_side_index - 1);
+		private _side = [east,west,independent,civilian] select (_side_index - 1);
 		allPlayers select {(alive _x) and (side _x == _side)};
 	};
 	case 4:
@@ -58,17 +59,15 @@ _playersToTeleport = switch (_dialogResult select 0) do
 sleep 1;
 
 if (isNil "_playersToTeleport") exitWith {};
-if (count _playersToTeleport == 0) exitWith 
+if (_playersToTeleport isEqualTo []) exitWith
 {
-	["No players in selection!"] call Ares_fnc_ShowZeusMessage; 
+	["No players in selection!"] call Ares_fnc_ShowZeusMessage;
 	playSound "FD_Start_F";
 };
-_includeVehicles = if ((_dialogResult select 3) == 0) then {false} else {true};
 
 // Call the teleport function.
-[_playersToTeleport, _tp_pos, true, _includeVehicles] call Ares_fnc_TeleportPlayers;
+[_playersToTeleport, _tp_pos, true, _additionalOption] call Ares_fnc_TeleportPlayers;
 
 [objNull, format["Teleported %1 players to %2", (count _playersToTeleport), _tp_pos]] call bis_fnc_showCuratorFeedbackMessage;
 
-#include "\achilles\modules_f_ares\module_footer.hpp"
-
+#include "\achilles\modules_f_ares\module_footer.inc.sqf"

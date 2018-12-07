@@ -1,15 +1,36 @@
-#include "\achilles\modules_f_ares\module_header.hpp"
+#include "\achilles\modules_f_ares\module_header.inc.sqf"
 
-_dialogResult = 
+private _dialogResult =
 [
-	localize "STR_HINT",
+	localize "STR_AMAE_HINT",
 	[
-		[localize "STR_MESSAGE", ""]
+		[
+			localize "STR_AMAE_HINT_TYPE", [localize "STR_AMAE_HINT",  localize "STR_AMAE_HINT_SILENT", localize "STR_AMAE_HINT_CADET"]
+		],
+		[
+			localize "STR_AMAE_MESSAGE", "MESSAGE"
+		]	
 	]
 ] call Ares_fnc_ShowChooseDialog;
 
-if (count (_dialogResult select 0) == 0) exitWith {};
+if (_dialogResult isEqualTo []) exitWith {};
 
-(_dialogResult select 0) remoteExec ["Hint", 0];
+_dialogResult params ["_hintType", "_message"];
 
-#include "\achilles\modules_f_ares\module_footer.hpp"
+switch (_hintType) do 
+{
+	case 0: 
+	{
+		[parseText _message] remoteExecCall ["hint", 0];
+	};
+	case 1: 
+	{
+		[parseText _message] remoteExecCall ["hintSilent", 0];
+	};
+	case 2: 
+	{
+		[parseText _message] remoteExecCall ["hintCadet", 0];
+	};
+};
+
+#include "\achilles\modules_f_ares\module_footer.inc.sqf"

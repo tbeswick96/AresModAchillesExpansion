@@ -6,37 +6,56 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-#include "\achilles\modules_f_ares\module_header.hpp"
+#include "\achilles\modules_f_ares\module_header.inc.sqf"
 
-_dialogResult = 
+private _dialogResult =
 [
-	localize "STR_HIDE_ZEUS",
+	localize "STR_AMAE_HIDE_ZEUS",
 	[
 		[
-			localize "STR_HIDE_ZEUS", [localize "STR_TRUE", localize "STR_False"]
+			localize "STR_AMAE_HIDE_ZEUS", [localize "STR_AMAE_YES", localize "STR_AMAE_NO"]
 		]
 	]
 ] call Ares_fnc_ShowChooseDialog;
 
-if (count _dialogResult == 0) exitWith {};
-_invisible = if ((_dialogResult select 0) == 0) then {true} else {false};
-_display_text = if ((_dialogResult select 0) == 0) then {localize "STR_ZEUS_IS_NOW_HIDDEN"} else {localize "STR_ZEUS_IS_NOW_VISIBLE"};
+if (_dialogResult isEqualTo []) exitWith {};
 
-if (_invisible and not (isObjectHidden player)) then 
+private _invisible = (_dialogResult select 0) == 0;
+private _display_text = [localize "STR_AMAE_ZEUS_IS_NOW_VISIBLE", localize "STR_AMAE_ZEUS_IS_NOW_HIDDEN"] select _invisible;
+
+private _curatorLogic = getAssignedCuratorLogic player;
+if (_invisible and !(isObjectHidden player)) then
 {
-	[player, true] remoteExec ["hideObjectGlobal",2];
-	player allowDamage false;
+	[player, true] remoteExecCall ["hideObjectGlobal",2];
+	[player, false] remoteExecCall ["allowDamage"];
 	player setCaptive true;
-} else
-{
-	if (not _invisible and (isObjectHidden player)) then
+	_curatorLogic setVariable ["showNotification", true];
+
+	private _eagle = _curatorLogic getVariable ["bird", objNull];
+	if (!isNull _eagle) then
 	{
-		[player, false] remoteExec ["hideObjectGlobal",2];
-		player allowDamage true;
-		player setCaptive false;		
+		[_eagle, true] remoteExecCall ["hideObjectGlobal",2];
+		[_eagle, false] remoteExecCall ["enableSimulationGlobal",2];
+	};
+}
+else
+{
+	if (!_invisible and (isObjectHidden player)) then
+	{
+		[player, false] remoteExecCall ["hideObjectGlobal",2];
+		[player, true] remoteExecCall ["allowDamage"];
+		player setCaptive false;
+		_curatorLogic setVariable ["showNotification", false];
+
+		private _eagle = _curatorLogic getVariable ["bird", objNull];
+		if (!isNull _eagle) then
+		{
+			[_eagle, true] remoteExecCall ["enableSimulationGlobal",2];
+			[_eagle, false] remoteExecCall ["hideObjectGlobal",2];
+		};
 	};
 };
 
 [_display_text] call Ares_fnc_ShowZeusMessage;
 
-#include "\achilles\modules_f_ares\module_footer.hpp"
+#include "\achilles\modules_f_ares\module_footer.inc.sqf"

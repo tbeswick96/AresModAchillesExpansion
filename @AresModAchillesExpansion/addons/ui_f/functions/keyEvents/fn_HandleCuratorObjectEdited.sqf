@@ -1,49 +1,78 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //	AUTHOR: Kex
-//	DATE: 20/11/16
-//	VERSION: 1.0
-//	FILE: Achilles\ui_f\functions\keyEvents\fn_HandleCuratorObjectEdited.sqf
+//	DATE: 5/7/17
+//	VERSION: 3.0
 //  DESCRIPTION: Executes when curator editable object is moved or rotated
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-_handled_object = param [1,objNull,[objNull]];
+private _handled_object = param [1,objNull,[objNull]];
 
 if (isNull _handled_object) exitWith {};
 
-// if object is a center object of a group => correct position and orientation for other objects of the group
-_group_attributes = _handled_object getVariable ["Achilles_var_groupAttributes",nil];
-if (not isNil "_group_attributes") then
+switch (true) do
 {
-	_center_pos = getPosWorld _handled_object;
-	
-	// define internal basis
-	_vector_dir = vectorDir _handled_object;
-	_vector_up =  vectorUp _handled_object;
-	_vector_perpendicular = _vector_dir vectorCrossProduct _vector_up;
-
-	// define transformation matrix
-	_standard_to_internal = [_vector_dir, _vector_up, _vector_perpendicular];
-	_internal_to_standard = [_standard_to_internal] call Achilles_fnc_matrixTranspose;
-	
+	case (_handled_object isKindOf "logic"):
 	{
-		_object = _x select 0;
-		
-		// reposition
-		_vector_center_object = [_internal_to_standard, _x select 1] call Achilles_fnc_vectorMap;
-		_object setPosWorld (_vector_center_object vectorAdd _center_pos);
-		
-		// reorientation
-		_vectors_dir_up = (_x select [2,2]) apply 
+		if (toLower typeOf _handled_object == "module_f") then
 		{
-			_return = [_internal_to_standard, _x] call Achilles_fnc_vectorMap;
-			_return;
+			// hanlde logic for simple objects on first edit
+			/*
+			_jip_id = _handled_object getVariable "needInit";
+			if (not isNil "_jip_id") then
+			{
+				_jip_id = _handled_object getVariable "needInit";
+				remoteExecCall ["", _jip_id];
+				_handled_object setVariable ["needInit", nil];
+			};
+			*/
 		};
-		if (local _object) then
+		if(!isNull (_handled_object getVariable ["slave", objNull])) then
 		{
-			_object setVectorDirAndUp _vectors_dir_up;
-		} else
+			private _slave = _handled_object getVariable "slave";
+			_slave setPosATL getPosATL _handled_object;
+			[_slave, [vectorDir _handled_object, vectorUp _handled_object]] remoteExecCall ["setVectorDirAndUp", 0, _slave];
+		};
+	};
+
+	case (!isNil {_handled_object getVariable "Achilles_var_groupAttributes"}):
+	{
+		// if object is a center object of a group => correct position and orientation for other objects of the group
+		private _group_attributes = _handled_object getVariable "Achilles_var_groupAttributes";
+		private _center_pos = getPosWorld _handled_object;
+
+		// define internal basis
+		private _vector_dir = vectorDir _handled_object;
+		private _vector_up =  vectorUp _handled_object;
+		private _vector_perpendicular = _vector_dir vectorCrossProduct _vector_up;
+
+		// define transformation matrix
+		private _standard_to_internal = [_vector_dir, _vector_up, _vector_perpendicular];
+		private _internal_to_standard = [_standard_to_internal] call CBA_fnc_matrixTranspose;
+
 		{
-			[_object ,_vectors_dir_up] remoteExec ["setVectorDirAndUp",_object];
-		};	
-	} forEach _group_attributes;
+			_x params ["_object"];
+
+			// reposition
+			private _vector_center_object = [_internal_to_standard, _x select 1] call CBA_fnc_vectMap3D;
+			_object setPosWorld (_vector_center_object vectorAdd _center_pos);
+
+			// reorientation
+			private _vectors_dir_up = (_x select [2,2]) apply {	[_internal_to_standard, _x] call CBA_fnc_vectMap3D; };
+
+			[_object ,_vectors_dir_up] remoteExec ["setVectorDirAndUp",0,_object];
+
+		} forEach _group_attributes;
+	};
+	case (_handled_object isKindOf "Man" && ((group _handled_object) getVariable ["Achilles_var_inGarrison", false])):
+	{
+		// enables rotation of individual units in garrisons
+		_handled_object doWatch (ASLtoATL eyePos _handled_object vectorAdd vectorDir _handled_object);
+	};
+	// does not yet work properly: e.g. catapults
+	/*
+	case (_handled_object isKindOf "Land_Carrier_01_base_F"):
+	{
+		[_handled_object] remoteExecCall ["BIS_fnc_Carrier01PosUpdate", 2];
+	};
+	*/
 };

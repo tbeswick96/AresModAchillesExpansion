@@ -4,11 +4,11 @@ class CfgPatches
 	{
 		weapons[] = {};
 		requiredVersion = 0.1;
-		author = "Kex";
-		authorUrl = "https://github.com/oOKexOo/AresModAchillesExpansion";
-		version = 0.0.3;
-		versionStr = "0.0.3";
-		versionAr[] = {0,0,3};
+		author = "ArmA 3 Achilles Mod Inc.";
+		authorUrl = "https://github.com/ArmaAchilles/AresModAchillesExpansion";
+		version = 1.0.0;
+		versionStr = "1.0.0";
+		versionAr[] = {0,1,0};
 		
 		units[] = {};
 		
@@ -34,3 +34,4 @@ class CfgPatches
 #include "cfgResources.hpp"
 #include "cfgHints.hpp"
 #include "cfgMods.hpp"
+#include "ACE_ZeusActions.hpp"

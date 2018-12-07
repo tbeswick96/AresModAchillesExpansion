@@ -1,15 +1,10 @@
-private ["_key","_handled"];
-_key = _this select 1;
-_handled = false;
-switch (_key) do
+private _key = _this select 1;
+private _handled = false;
+if (_key in actionKeys "CuratorLevelObject") then // align up-vector with z-axis (default: X)
 {
-	case 29: // CTRL
+	private _curatorSelected = ["object"] call Achilles_fnc_getCuratorSelected;
 	{
-		Ares_Ctrl_Key_Pressed = true;
-	};
-	case 42: // SHIFT
-	{
-		Ares_Shift_Key_Pressed = true;
-	};
+		[getAssignedCuratorLogic player, _x] call Achilles_fnc_HandleCuratorObjectEdited;
+	} forEach _curatorSelected;
 };
 _handled

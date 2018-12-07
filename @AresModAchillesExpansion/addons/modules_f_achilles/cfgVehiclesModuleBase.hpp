@@ -1,4 +1,3 @@
-
 class CfgVehicles
 {
 	class Logic;
@@ -42,37 +41,54 @@ class CfgVehicles
 			description = "Achilles Module Base";
 		};
 	};
-	
+
+	class Enyo_Module_Base : Achilles_Module_Base
+	{
+		author = "CreepPork_LV";
+		category = "Enyo";
+		displayName = "Enyo Module Base";
+		dlc = "Enyo";
+
+		class ModuleDescription: ModuleDescription
+		{
+			description = "Enyo Module Base";
+		};
+	};
+
 	class All;
 	class Thing : All {};
 	class ModuleEmpty_F : Thing {};
-	
+
 	#include "ACE\cfgVehiclesModulesACE.hpp"
+	#include "Arsenal\cfgVehiclesModulesArsenal.hpp"
 	#include "Behaviours\cfgVehiclesModulesBehaviours.hpp"
 	#include "Buildings\cfgVehiclesModulesBuildings.hpp"
 	#include "DevTools\cfgVehiclesModulesDevTools.hpp"
 	#include "Effects\cfgVehiclesModuleEffects.hpp"
+	#include "Equipment\cfgVehiclesModulesEquipment.hpp"
 	#include "FireSupport\cfgVehiclesModulesFireSupport.hpp"
-	#include "Helpers\cfgVehiclesModulesHelpers.hpp"
 	#include "Environment\cfgVehiclesModulesEnvironment.hpp"
 	#include "MissionFlow\cfgVehiclesModulesMissionFlow.hpp"
 	#include "Objects\cfgVehiclesModulesObjects.hpp"
+	#include "Player\cfgVehiclesModulesPlayer.hpp"
+	#include "Reinforcements\cfgVehiclesModulesReinforcements.hpp"
 	#include "Replacement\cfgVehiclesModulesReplacement.hpp"
 	#include "Spawn\cfgVehiclesModulesSpawn.hpp"
+	#include "Zeus\cfgVehiclesModulesZeus.hpp"
 	
-	// config replacement: remove vanilla effect modules and training category
+	// config replacement: remove vanilla effect modules
 	class ModuleChemlight_F : Module_F {};
 	class ModuleChemlightBlue_F : ModuleChemlight_F {scopeCurator = 1;};
 	class ModuleChemlightGreen_F : ModuleChemlightBlue_F {scopeCurator = 1;};
 	class ModuleChemlightRed_F : ModuleChemlightBlue_F {scopeCurator = 1;};
 	class ModuleChemlightYellow_F : ModuleChemlightBlue_F {scopeCurator = 1;};
-	
+
 	class ModuleFlare_F : Module_F {};
 	class ModuleFlareWhite_F : ModuleFlare_F {scopeCurator = 1;};
 	class ModuleFlareGreen_F : ModuleFlareWhite_F {scopeCurator = 1;};
 	class ModuleFlareRed_F : ModuleFlareWhite_F {scopeCurator = 1;};
 	class ModuleFlareYellow_F : ModuleFlareWhite_F {scopeCurator = 1;};
-	
+
 	class ModuleSmoke_F : Module_F {};
 	class ModuleSmokeWhite_F : ModuleSmoke_F {scopeCurator = 1;};
 	class ModuleSmokeBlue_F : ModuleSmokeWhite_F {scopeCurator = 1;};
@@ -81,11 +97,8 @@ class CfgVehicles
 	class ModuleSmokePurple_F : ModuleSmokeWhite_F {scopeCurator = 1;};
 	class ModuleSmokeRed_F : ModuleSmokeWhite_F {scopeCurator = 1;};
 	class ModuleSmokeYellow_F : ModuleSmokeWhite_F {scopeCurator = 1;};
-	
-	class ModuleIRGrenade_F : Module_F {scopeCurator = 1;};
-	class ModuleTracers_F : Module_F {scopeCurator = 1;}; 
 
-	class ModuleBootcampStage_F : Module_F {scopeCurator = 1;};
-	class ModuleHint_F : ModuleBootcampStage_F {scopeCurator = 1;};
-	class ModulePunishment_F : ModuleBootcampStage_F {scopeCurator = 1;};	
+	class ModuleIRGrenade_F : Module_F {scopeCurator = 1;};
+	class ModuleTracers_F : Module_F {scopeCurator = 1;};
+	
 };

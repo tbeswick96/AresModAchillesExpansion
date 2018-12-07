@@ -1,8 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //	AUTHOR: Kex
-//	DATE: 9/2/16
-//	VERSION: 1.0
-//	FILE: functions_f_achilles\functions\common\fn_getVehicleAmmoDef.sqf
+//	DATE: 6/15/17
+//	VERSION: 2.0
 //  DESCRIPTION: estimate for inverse function of setVehicleAmmoDef command (not very accurate)
 //
 //	ARGUMENTS:
@@ -16,36 +15,33 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-_vehicle = _this;
+private _vehicle = _this;
+private _vehicleType = typeOf _vehicle;
 
 // get current state of all turret magazines
-_AllTurretCurrentMagazinesClassName = [];
-_AllTurretCurrentMagazinesAmmoCount = [];
-{
-	_AllTurretCurrentMagazinesClassName pushBack (_x select 0);
-	_AllTurretCurrentMagazinesAmmoCount pushBack (_x select 2);
-} forEach (magazinesAllTurrets _vehicle);
+private _AllTurretCurrentMagazinesClassName = (magazinesAllTurrets _vehicle) apply {_x select 0};
+private _AllTurretCurrentMagazinesAmmoCount = (magazinesAllTurrets _vehicle) apply {_x select 2};
 
-_turretsCfg = [typeOf _vehicle] call Achilles_fnc_getAllTurretConfig;
+private _turretsCfg = [_vehicleType] call Achilles_fnc_getAllTurretConfig;
 
 // append config path for driver magazines
-_turretsCfg pushBack (configFile >> "CfgVehicles" >> typeOf _vehicle);
+_turretsCfg pushBack (configFile >> "CfgVehicles" >> _vehicleType);
 
-_AllTurretAmmoPercentages = [];
+private _AllTurretAmmoPercentages = [];
 
 // get ammo percentages for all turrets
 {
-	_TurretAmmoPercentages = [];
-	_cfgTurret = _x;
-	_MagazinesClassName = getArray (_cfgTurret >> "magazines");
+	private _TurretAmmoPercentages = [];
+	private _cfgTurret = _x;
+	private _MagazinesClassName = getArray (_cfgTurret >> "magazines");
 	{
 		// compare magazine count from config with current count
-		_CfgAmmoCount = getNumber (configFile >> "CfgMagazines" >> _x >> "count");
-		_index = _AllTurretCurrentMagazinesClassName find _x;
+		private _CfgAmmoCount = getNumber (configFile >> "CfgMagazines" >> _x >> "count");
+		private _index = _AllTurretCurrentMagazinesClassName find _x;
 		if (_index != -1) then
 		{
 			_TurretAmmoPercentages pushBack ((_AllTurretCurrentMagazinesAmmoCount select _index) / _CfgAmmoCount);
-			
+
 			// remove the counted magazine from the list
 			_AllTurretCurrentMagazinesClassName deleteAt _index;
 			_AllTurretCurrentMagazinesAmmoCount deleteAt _index;
@@ -55,18 +51,38 @@ _AllTurretAmmoPercentages = [];
 		};
 	} forEach _MagazinesClassName;
 
-	if (count _TurretAmmoPercentages != 0) then
+	if (!(_TurretAmmoPercentages isEqualTo [])) then
 	{
-		_AllTurretAmmoPercentages pushBack (_TurretAmmoPercentages call Achilles_fnc_arrayMean);
+		_AllTurretAmmoPercentages pushBack (_TurretAmmoPercentages call BIS_fnc_arithmeticMean);
 	};
-	
+
 } forEach _turretsCfg;
 
-// return the overall mean of all percentages
-if (count _AllTurretAmmoPercentages != 0) then
+// handle dynamic loadout
+if (isClass (configFile >> "cfgVehicles" >> _vehicleType >> "Components" >> "TransportPylonsComponent")) then
 {
-	(_AllTurretAmmoPercentages call Achilles_fnc_arrayMean);
-} else
-{
-	0;
+	private _TurretAmmoPercentages = [];
+	{
+		if (_x != "") then
+		{
+			private _current_ammoCount = _vehicle ammoOnPylon (_forEachIndex + 1);
+			if (typeName _current_ammoCount == "BOOL") then
+			{
+				if (_current_ammoCount) then {_TurretAmmoPercentages pushBack 1} else {_TurretAmmoPercentages pushBack 0};
+			} else
+			{
+				private _cfg_ammoCount = getNumber (configfile >> "CfgMagazines" >> _x >> "count");
+				if (_cfg_ammoCount == 0) then {_TurretAmmoPercentages pushBack 1} else {_TurretAmmoPercentages pushBack (_current_ammoCount / _cfg_ammoCount)};
+			};
+		};
+	} forEach (getPylonMagazines _vehicle);
+	_AllTurretAmmoPercentages pushBack (_TurretAmmoPercentages call BIS_fnc_arithmeticMean);
 };
+
+
+// return the overall mean of all percentages
+if (!(_AllTurretAmmoPercentages isEqualTo [])) exitWith
+{
+	_AllTurretAmmoPercentages call BIS_fnc_arithmeticMean
+};
+0
